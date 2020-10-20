@@ -1,6 +1,8 @@
-# A Textual Analysis of U.S. Presidential Debates 1960-2020
+# A Textual Analysis of all U.S. General Election Debates
 
-This repository constructs a series of analyses hosted [here](https://github.com/domrussel/us_pres_debate).
+This repository constructs a series of analyses that explore the text of every presidential debate.
+
+## You can find the write-up hosted [here](https://github.com/domrussel/us_pres_debate).
 
 The debate responses are scraped from the [Commission on Presidential Debates](https://www.debates.org/voter-education/debate-transcripts/) (for 1960 to 2016) and from rev.com (for 2020).
 
