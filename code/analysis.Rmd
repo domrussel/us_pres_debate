@@ -1,5 +1,5 @@
 ---
-title: "A Textual Analysis of Every U.S. General Election Debates"
+title: "A Textual Analysis of Every U.S. General Election Debate"
 author: "Dominic Russel"
 date: "10/19/2020"
 output:
@@ -14,13 +14,6 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
-## Overview
-
-
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r results='hide',message=FALSE}
 library(tidyverse)
@@ -57,7 +50,9 @@ dat_main <- dat_in %>%
   ))
 ```
 
-## Including Plots
+The first U.S. Presidential debate was widely covered as a covered .... While analysts... One way of contextualizing this debate in U.S. history is through a textual analysis of the .... This removes some important signals (the tone individuals speak with, for example), but...
+
+To do so, I scraped and cleaned the transcripts of every general election Presidential and Vice Presidential debate in U.S. history. The final dataset includes over 13,500 questions and responses organized by debate and speaker, from the first Kennedy-Nixon debate in 1960 to Harris-Pence VP debate in 2020. You can find the data [here]( https://github.com/domrussel/us_pres_debate).
 
 ```{r results='hide',message=FALSE}
 word_sentiment <- dat_main %>% 
@@ -126,6 +121,16 @@ make_over_time_plot <- function(dat, x_col, y_col, label_col, color_col, y_label
 }
 ```
 
+## Simple Sentiment Analysis
+
+One way to analyze these data is to look at how positive or negative the candidates are in their responses --- the sentiment of their arguments.  At its most simple, sentiment analysis counts the number of positive words (“excellent”, “brilliant”, “win”) and negative words (“worst”, “horrible”, “fraud”) used in a text. In this analysis, a debater who uses more positive words than negative words will have a more positive average sentiment (and vice versa).
+
+Using the [AFINN](http://www2.imm.dtu.dk/pubdb/edoc/imm6006.pdf) dictionary, which assigns scores of -5 to 5 to a corpus of nearly 2,500 words, I calculate the average sentiment of every presidential debate candidate since 1960. It is important to note before diving into the results that sentiment analysis is an imperfect science, and that any results are dependent on certain assumptions about language. Using the same dictionary of words over time, for example, might be problematic if a word that is more emotionally charged today than in the past.
+
+With these caveats aside, the plot below shows the average sentiment of presidential debaters from the two major parties.
+
+#### Average Sentiment of U.S. Presidential Debaters (AFINN)
+
 ```{r message=FALSE, fig.width=12, fig.height=6}
 dat_p1 <- word_sentiment %>% 
   # Here, drop the VP debates and other party candidates
@@ -150,6 +155,12 @@ make_over_time_plot(dat_p1, x_col="election", y_col="avg_word_sent",
                     y_min=-0.6, y_max=0.7,
                     x_nudge_col="x_nudge", y_nudge_col="y_nudge")
 ```
+
+The first thing that jumps out, perhaps unsurprisingly, is that Trump is historically negative in his debate performances. The average sentiment of his words is more than twice as negative than even the closest comparisons (Reagan in 1980 and 1984, and Biden in 2020). By contrast, the most positive debate performances were delivered by Gerald Ford, the George Bushes in their first terms, and both John F. Kennedy and Richard Nixon in the first presidential debate. In general, sentiment appears to have declined over time between the first two years of presidential debates in 1960 and 1976 (there were no presidential debates in the 1964, 1968, and 1972 elections) and the last two in 2016 and 2020.
+
+We can also break out sentiment by each individual debate performance. Here we also include VP debates and the three candidates outside of the two major parties that made the debate stage. The graph below shows how historically negative each of Trump’s debate performances have been.
+
+#### Average Sentiment by U.S. General Election Debate Performance (AFINN)
 
 ```{r message=FALSE, fig.width=8, fig.height=8}
 set.seed(9)
@@ -187,11 +198,11 @@ ggplot(dat_p2, aes(x=1, y=avg_word_sent, col=party, label=text_label)) +
     panel.grid.major.x = element_blank(),
     legend.title = element_blank()
   ) + 
-  scale_color_manual(values=c("#0015BC", "#DE0100", "gray")) +
+  scale_color_manual(values=c("#0015BC", "#DE0100", "#8A8A8A")) +
   labs(y="Average Sentiment")
 ```
 
-Why are Trump's debates rated so... AFINN just gives a sentiment score. Here Trump uses a lot of very negative words
+Why are Trump's debates rated as so negative? Because AFINN is based on this simple dictionary scoring method, we can look "under the hood" and find out. The tables below compare the most positive/negative and frequently used words for Trump and for a debator with some of the most positive scores --- John F. Kennedy. The <span style="color:#900C3F;">purple words</span> are negative, arranged by sentiment value then by usage. The <span style="color:#0b8a61;">green words</span> are positive, arranged similarly so the most positive, most used words are at the bottom. The farthest right column shows how many times Trump/Kennedy used each word, as a percent of every word they used in the AFINN dictionary.
 
 ```{r message=FALSE}
 trump_word_usage <- word_sentiment%>% 
@@ -210,7 +221,7 @@ kennedy_word_usage<- word_sentiment %>%
 
 bind_rows(
   trump_word_usage %>% arrange(value, desc(share_of_words)) %>% head(10),
-  trump_word_usage %>% arrange(value, desc(share_of_words)) %>% tail(10)) %>% 
+  trump_word_usage %>% arrange(value, share_of_words) %>% tail(10)) %>% 
   select(Word=word, `Sentiment Value`=value, `Share of Neg & Pos Words (%)`= share_of_words) %>% 
   kbl(caption="Trump Most Used Negative & Positive Words") %>%
   kable_styling(full_width = F, position = "float_left", font_size=14) %>%
@@ -220,7 +231,7 @@ bind_rows(
 
 bind_rows(
   kennedy_word_usage %>% arrange(value, desc(share_of_words)) %>% head(10),
-  kennedy_word_usage %>% arrange(value, desc(share_of_words)) %>% tail(10)) %>% 
+  kennedy_word_usage %>% arrange(value, share_of_words) %>% tail(10)) %>% 
   select(Word=word, `Sentiment Value`=value, `Share of Neg & Pos Words (%)`= share_of_words) %>% 
   kbl(caption="Kennedy Most Used Negative & Positive Words") %>% 
   kable_styling(full_width = F, position = "float_right", font_size=14) %>%
@@ -231,8 +242,11 @@ bind_rows(
 <div style="margin-bottom:850px;">
 </div>
 
+Whereas Kennedy did not use any word with a sentiment value lower than -3, one percent of Trump's AFINN matching word had sentiment values of -4 or lower. Also dragging him down is likely his repeated use of the word "bad", which alone makes up five percent of his negative/positive words. On the other hand, Trump does also use more very emotionally charged *positive* words than Kennedy (in particular "wonderful" and variations of the word "win"). But Kennedy also did repetedly use a number of fairly positive words like "successful", "breakthrough", and "win".
 
-While the first plot showed that the sentiment in Biden's 1st 2020 debate performance was generally lower than the average for past candidates, Biden individual debate performances haven't been particularly negative. Here we highlight Trump's four presidential debates and Biden's two VP debates and one presidential debate.
+A final thought on these sentiment analyses: while the first plot showed that the sentiment in Biden's first 2020 debate performance was generally quite negative compared to the average of past candidates, Biden's individual debate performances haven't been particularly negative. The graph below highlights Trump's four presidential debates and Biden's two VP debates (in 2008 and 2012) and one presidential debate.
+
+#### Average Sentiment by U.S. General Election Debate Performance -- Biden/Trump (AFINN)
 
 ```{r message=FALSE, fig.width=8, fig.height=8}
 set.seed(9)
@@ -260,12 +274,19 @@ ggplot(dat_p3, aes(x=1, y=avg_word_sent, col=party, label=text_label)) +
     panel.grid.major.x = element_blank(),
     legend.title = element_blank()
   ) + 
-  scale_color_manual(values=c("#0015BC", "#DE0100", "gray")) +
+  scale_color_manual(values=c("#0015BC", "#DE0100", "#8A8A8A")) +
   labs(y="Average Sentiment")
 ```
 
+## Additional Measures of Sentiment and Emotion
 
-Instead of words we can do something more sophisticated with full sentences using the package sentimentr.
+One potential problem with the simple dictionary based lookups used in the previous analysisis is that they could overlook the presence of "valence shifter" words that can change sentiment. For example, if someone used the word "bad" we might want to know if they actually said something was "not bad" or "very bad". Another thing we might be interested in is looking beyond simply a negative/positive scale, and instead at specific emotions like anger, disgust, and trust.
+
+The [sentimentr](https://github.com/trinker/sentimentr) package implements solutions for both. Without going too far into the details, the package uses a similar set of dictionary methods but with an expanded vocabulary, accounting for valence shifters, and word tagging for particular emotions.
+
+Using this package, we can first re-create our graph of debater sentiment over time for the two major parties.
+
+#### Average Sentiment of U.S. Presidential Debaters (sentimentr)
 
 ```{r message=FALSE, fig.width=12, fig.height=6}
 sentence_sent <- dat_main %>% 
@@ -279,12 +300,15 @@ sentence_sent <- dat_main %>%
   select(-word_count, -sd)
 
 make_over_time_plot(sentence_sent, x_col="election", y_col="ave_sentiment",
-                    label_col="speaker_clean", color_col="party", y_label="Average Sentence-Level Sentiment",
+                    label_col="speaker_clean", color_col="party", y_label="Average Sentiment",
                     y_min=-0.02, y_max=0.14)
 ```
 
+While some points change, the main results hold: Trump is historically negative and Ford and the first debate Bushes are very positive.
 
-And we can also look at emotion
+We can also look at particular emotions...
+
+#### Average Emotional Scores of U.S. Presidential Debaters (sentimentr)
 
 ```{r message=FALSE, fig.width=16, fig.height=12}
 sentence_emotion <- dat_main %>% 
@@ -339,7 +363,103 @@ grid.arrange(
 ```
 
 
+## Most Commonly Used Bigrams
+
+To understand, below we present bigram word clouds...
+
+Here are five from 1960, 1984, 2004, 2016, and 2020. You can find them for every presidential debate here.
+
+```{r message=FALSE, fig.width=10, fig.height=4}
+set.seed(17)
+
+bigrams <- dat_main %>% 
+  filter(vp_debate == 0, party != "Other Candidate") %>% 
+  unnest_tokens(bigram, text, token = "ngrams", n = 2)
+
+bigrams_separated <- bigrams %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word) %>% 
+  filter(!is.na(word1), !is.na(word2)) %>% 
+  filter(word1 != "uh", word2 != "uh")
+
+bigram_frequencies <- bigrams_filtered %>%
+  group_by(election, speaker_clean, word1, word2) %>% 
+  summarise(n = n()) %>% 
+  ungroup %>%
+  arrange(desc(n)) %>% 
+  group_by(election, speaker_clean) %>% 
+  slice(1:20) %>% 
+  ungroup
+
+bigram_frequencies_w_party <- dat_main %>% 
+  distinct(election, speaker_clean, party) %>% 
+  right_join(bigram_frequencies, by=c("election","speaker_clean")) %>% 
+  mutate(n_gram = paste(word1, word2))
+
+dems <- filter(bigram_frequencies_w_party, party == "Democratic Candidate")
+repubs <- filter(bigram_frequencies_w_party, party == "Republican Candidate")
+
+# years <- unique(bigram_frequencies_w_party$election)
+years <- c(1960, 1984, 2004, 2016, 2020)
+
+for(i in 1:length(years)){
+  
+  year <- years[i]
+  
+  curr_dem <- filter(dems, election == year)
+    # Sometimes the speaker says his opponent's name way more than
+    # all the others (e.g. Governor Romney). This leads the cloud
+    # to have a weird scaling. We can still show that the word
+    # was said far more but not destroy the cloud by scaling
+    # it down a bit.
+  curr_dem <- curr_dem %>% arrange(desc(n))
+  if(curr_dem$n[1] > 1.25 * curr_dem$n[2]){
+    curr_dem$n[1] <- curr_dem$n[2] * 1.25
+  }
+  curr_dem_name <- curr_dem$speaker_clean[1]
+  
+  curr_repub <- filter(repubs, election == year)
+  curr_repub <- curr_repub %>% arrange(desc(n))
+  if(curr_repub$n[1] > 1.25 * curr_repub$n[2]){
+    curr_repub$n[1] <- curr_repub$n[2] * 1.25
+  }
+  curr_repub_name <- curr_repub$speaker_clean[1]
+  
+  p_dem <- ggplot(curr_dem, aes(label=n_gram, size=n)) +
+    geom_text_wordcloud(color="#0015BC") +
+    scale_size_area(max_size = 6) +
+    theme_minimal() +
+    theme(plot.title = element_text(size=14,
+                                    hjust=0.5,
+                                    color = "#3F3F3F")) +
+    labs(title=curr_dem_name)
+  
+  p_repub <- ggplot(curr_repub, aes(label=n_gram, size=n)) +
+    geom_text_wordcloud(color="#DE0100") +
+    scale_size_area(max_size = 6) +
+    theme_minimal() +
+    theme(plot.title = element_text(size=14,
+                                    hjust=0.5,
+                                    color = "#3F3F3F")) +
+    labs(title=curr_repub_name)
+  
+  p_both <- grid.arrange(p_dem,
+                         p_repub,
+                         nrow = 1,
+                         top = textGrob(str_interp("${year} Election Debates"),
+                                        gp=gpar(fontsize=18, col="#3F3F3F")))
+  
+  p_both
+}
+```
+
+## Principal Components Analysis
+
 One more thing we can do is PCA, using the..
+
 
 We do lose some interpreitability, but essentially...
 
@@ -414,90 +534,4 @@ ggplot(pca2, aes(PC1, PC2, label=paste(paste(speaker_clean, date)), color=party)
   
 ```
 
-A final look, below we present bigram word clouds...
-
-```{r message=FALSE, fig.width=10, fig.height=4}
-set.seed(17)
-
-bigrams <- dat_main %>% 
-  filter(vp_debate == 0, party != "Other Candidate") %>% 
-  unnest_tokens(bigram, text, token = "ngrams", n = 2)
-
-bigrams_separated <- bigrams %>%
-  separate(bigram, c("word1", "word2"), sep = " ")
-
-bigrams_filtered <- bigrams_separated %>%
-  filter(!word1 %in% stop_words$word) %>%
-  filter(!word2 %in% stop_words$word) %>% 
-  filter(!is.na(word1), !is.na(word2)) %>% 
-  filter(word1 != "uh", word2 != "uh")
-
-bigram_frequencies <- bigrams_filtered %>%
-  group_by(election, speaker_clean, word1, word2) %>% 
-  summarise(n = n()) %>% 
-  ungroup %>%
-  arrange(desc(n)) %>% 
-  group_by(election, speaker_clean) %>% 
-  slice(1:20) %>% 
-  ungroup
-
-bigram_frequencies_w_party <- dat_main %>% 
-  distinct(election, speaker_clean, party) %>% 
-  right_join(bigram_frequencies, by=c("election","speaker_clean")) %>% 
-  mutate(n_gram = paste(word1, word2))
-
-dems <- filter(bigram_frequencies_w_party, party == "Democratic Candidate")
-repubs <- filter(bigram_frequencies_w_party, party == "Republican Candidate")
-
-years <- unique(bigram_frequencies_w_party$election)
-
-for(i in 1:length(years)){
-  
-  year <- years[i]
-  
-  curr_dem <- filter(dems, election == year)
-    # Sometimes the speaker says his opponent's name way more than
-    # all the others (e.g. Governor Romney). This leads the cloud
-    # to have a weird scaling. We can still show that the word
-    # was said far more but not destroy the cloud by scaling
-    # it down a bit.
-  curr_dem <- curr_dem %>% arrange(desc(n))
-  if(curr_dem$n[1] > 1.25 * curr_dem$n[2]){
-    curr_dem$n[1] <- curr_dem$n[2] * 1.25
-  }
-  curr_dem_name <- curr_dem$speaker_clean[1]
-  
-  curr_repub <- filter(repubs, election == year)
-  curr_repub <- curr_repub %>% arrange(desc(n))
-  if(curr_repub$n[1] > 1.25 * curr_repub$n[2]){
-    curr_repub$n[1] <- curr_repub$n[2] * 1.25
-  }
-  curr_repub_name <- curr_repub$speaker_clean[1]
-  
-  p_dem <- ggplot(curr_dem, aes(label=n_gram, size=n)) +
-    geom_text_wordcloud(color="#0015BC") +
-    scale_size_area(max_size = 6) +
-    theme_minimal() +
-    theme(plot.title = element_text(size=16,
-                                    hjust=0.5,
-                                    color = "Black")) +
-    labs(title=curr_dem_name)
-  
-  p_repub <- ggplot(curr_repub, aes(label=n_gram, size=n)) +
-    geom_text_wordcloud(color="#DE0100") +
-    scale_size_area(max_size = 6) +
-    theme_minimal() +
-    theme(plot.title = element_text(size=16,
-                                    hjust=0.5,
-                                    color = "Black")) +
-    labs(title=curr_repub_name)
-  
-  p_both <- grid.arrange(p_dem,
-                         p_repub,
-                         nrow = 1,
-                         top = textGrob(str_interp("${year} Election Debates"),
-                                        gp=gpar(fontsize=20)))
-  
-  p_both
-}
-```
+Thanks for reading! If you enjoyed this please share it. You can find out the code for this document, as well as the cleaned data in this Github repository. 
