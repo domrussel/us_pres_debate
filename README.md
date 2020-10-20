@@ -2,7 +2,7 @@
 
 This repository constructs a series of analyses that explore the text of every presidential debate.
 
-## You can find the write-up hosted [here](https://github.com/domrussel/us_pres_debate).
+<span style="font-size:6em;">You can find the write-up hosted [here](https://github.com/domrussel/us_pres_debate).</span>
 
 The debate responses are scraped from the [Commission on Presidential Debates](https://www.debates.org/voter-education/debate-transcripts/) (for 1960 to 2016) and from rev.com (for 2020).
 
