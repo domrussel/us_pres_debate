@@ -1,8 +1,10 @@
 ---
-title: "A Textual Analysis of Every Presidential Debate"
+title: "A Textual Analysis of Every U.S. General Election Debates"
 author: "Dominic Russel"
 date: "10/19/2020"
-output: html_document
+output:
+  html_document:
+    theme: cosmo
 ---
 
 ```{r setup, include=FALSE}
@@ -209,25 +211,24 @@ kennedy_word_usage<- word_sentiment %>%
 bind_rows(
   trump_word_usage %>% arrange(value, desc(share_of_words)) %>% head(10),
   trump_word_usage %>% arrange(value, desc(share_of_words)) %>% tail(10)) %>% 
-  select(Word=word, `Sentiment Value`=value, `Share of all Positive/Negative Words (%)`= share_of_words) %>% 
-  kbl(caption="Trump Word Usage") %>%
-  kable_paper(full_width = F, position = "float_left") %>%
+  select(Word=word, `Sentiment Value`=value, `Share of Neg & Pos Words (%)`= share_of_words) %>% 
+  kbl(caption="Trump Most Used Negative & Positive Words") %>%
+  kable_styling(full_width = F, position = "float_left", font_size=14) %>%
   row_spec(1:10, color = "#900C3F") %>% 
-  row_spec(11:20, color = "#35AC8A")
+  row_spec(11:20, color = "#0b8a61")
 
 
 bind_rows(
   kennedy_word_usage %>% arrange(value, desc(share_of_words)) %>% head(10),
   kennedy_word_usage %>% arrange(value, desc(share_of_words)) %>% tail(10)) %>% 
-  select(Word=word, `Sentiment Value`=value, `Share of all Positive/Negative Words (%)`= share_of_words) %>% 
-  kbl(caption="Kennedy Word Usage") %>% 
-  kable_paper(full_width = F, position = "float_right") %>%
+  select(Word=word, `Sentiment Value`=value, `Share of Neg & Pos Words (%)`= share_of_words) %>% 
+  kbl(caption="Kennedy Most Used Negative & Positive Words") %>% 
+  kable_styling(full_width = F, position = "float_right", font_size=14) %>%
   row_spec(1:10, color = "#900C3F") %>% 
-  row_spec(11:20, color = "#35AC8A")
+  row_spec(11:20, color = "#0b8a61")
 
 ```
-
-<div style="margin-bottom:750px;">
+<div style="margin-bottom:850px;">
 </div>
 
 
