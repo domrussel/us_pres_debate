@@ -50,7 +50,7 @@ dat_main <- dat_in %>%
   ))
 ```
 
-The first U.S. Presidential debate was [widely covered](https://www.washingtonpost.com/entertainment/tv/trump-biden-debate-tv-review/2020/09/30/f5217482-020d-11eb-a2db-417cddf4816a_story.html) as [one of the worst in U.S. history](https://theweek.com/articles/940566/worst-presidential-debate-all-time), with analysts [like CNN's Jake Tapper](https://www.youtube.com/watch?v=pKys4M-bi9g) left grasping for the words to describe it. Was it truly "[a hot mess, inside a dumpster fire, inside a trainwreck](https://www.youtube.com/watch?v=pKys4M-bi9g)"?  Using textual analyses, I attempt to quantitatively assess this debate, and every other, in U.S. history.
+The first 2020 U.S. Presidential debate was [widely covered](https://www.washingtonpost.com/entertainment/tv/trump-biden-debate-tv-review/2020/09/30/f5217482-020d-11eb-a2db-417cddf4816a_story.html) as [one of the worst in U.S. history](https://theweek.com/articles/940566/worst-presidential-debate-all-time), with analysts [like CNN's Jake Tapper](https://www.youtube.com/watch?v=pKys4M-bi9g) left grasping for the words to describe it. Was it truly "[a hot mess, inside a dumpster fire, inside a trainwreck](https://www.youtube.com/watch?v=pKys4M-bi9g)"?  Using textual analyses, I attempt to quantitatively compare this debate with every other in U.S. history.
 
 My results are built on a dataset of every general election Presidential and Vice Presidential debate in U.S. history. I scraped this data from the [Commission on Presidential Debates website](https://www.debates.org/voter-education/debate-transcripts/) and [rev.com](https://www.rev.com/blog/transcript-category/debate-transcripts). The final dataset includes over 13,500 questions and responses organized by debate and speaker, from the first Kennedy-Nixon debate in 1960 to Harris-Pence VP debate in 2020. You can find the data [here]( https://github.com/domrussel/us_pres_debate).
 
@@ -158,7 +158,7 @@ At this point, it is important to note that sentiment analysis is an imperfect s
 
 Even with these caveats in mind, Trump clearly stands out as a historically negative debater. The average sentiment of his performances is more than twice as negative than even the closest comparisons (Reagan in 1980 and 1984, and Biden in 2020). By contrast, the most positive debate performances were delivered by Gerald Ford, each of the George Bushes in their first terms, and both John F. Kennedy and Richard Nixon in the 1960 debates. In general, sentiment appears to have declined over time from the first two years of presidential debates in 1960 and 1976 (there were no presidential debates in the 1964, 1968, and 1972 elections) and the last two in 2016 and 2020.
 
-We can also break out sentiment by each individual debate performance. Here, I include VP debates and the three non-major party candidates that made the debate stage. The graph  shows that the four most negative debate performances in U.S. history all belong to Trump.
+I can also break out sentiment by each individual debate performance. Here, I include VP debates and the three non-major party candidates that made the debate stage. The graph  shows that the four most negative debate performances in U.S. history all belong to Trump.
 
 #### Average Sentiment by U.S. General Election Debate Performance
 
@@ -202,7 +202,7 @@ ggplot(dat_p2, aes(x=1, y=avg_word_sent, col=party, label=text_label)) +
   labs(y="Average Sentiment")
 ```
 
-Why are Trump's debates rated as so negative? Our simple dictionary-based method allows us to easily look "under the hood" and find out. The tables below compare Trump's most emotionally charged words with those of John F. Kennedy, one of the more positive debaters. The <span style="color:#900C3F;">purple words</span> are negative, arranged by sentiment value then by usage. The <span style="color:#0b8a61;">green words</span> are positive, arranged similarly so that the most positive, most used words are at the bottom. The farthest right column shows how many times Trump/Kennedy used each word as a percent of all their positive and negative words.
+Why are Trump's debates rated as so negative? The simple dictionary-based method allows us to easily look "under the hood" and find out. The tables below compare Trump's most emotionally charged words with those of John F. Kennedy, one of the more positive debaters. The <span style="color:#900C3F;">purple words</span> are negative, arranged by sentiment value then by usage. The <span style="color:#0b8a61;">green words</span> are positive, arranged similarly so that the most positive, most used words are at the bottom. The farthest right column shows how many times Trump/Kennedy used each word as a percent of all their positive and negative words.
 
 ```{r message=FALSE}
 trump_word_usage <- word_sentiment%>% 
@@ -244,7 +244,7 @@ bind_rows(
 
 Trump's words "bastards", "fraud", "hell", "catastrophic", and "fraudulent" all had lower sentiment scores than any word Kennedy used in his four debates. In addition, Trump's frequent usage of the word "bad" (which alone makes up nearly five percent of his negative/positive words) drags his sentiment score down. While Trump does also use more very emotionally charged *positive* words than Kennedy (in particular "wonderful" and variations of the word "win"), Kennedy also often used a number of words scored as fairly positive like "successful", "breakthrough", and "win".
 
-A final thought on these analyses: while the first plot showed that the sentiment in Biden's first 2020 debate performance was one of the most negative compared to the average of past candidates, Biden's individual past debate performances haven't been particularly negative. The graph below highlights Trump's four presidential debates and Biden's two VP debates (in 2008 and 2012) and one presidential debate.
+One final point: while the first plot showed that the sentiment in Biden's first 2020 debate performance was one of the most negative compared to the average of past candidates, Biden's individual past debate performances haven't been particularly negative. The graph below highlights Trump's four presidential debates and Biden's two VP debates (in 2008 and 2012) and one presidential debate.
 
 #### Average Sentiment by U.S. General Election Debate Performance -- Biden/Trump
 
@@ -284,7 +284,7 @@ One potential problem with the simple dictionary-based method used in the previo
 
 The [sentimentr](https://github.com/trinker/sentimentr) package implements solutions for both. Without going too far into the details, the package uses a similar set of dictionary methods but with an expanded vocabulary, accounting for valence shifters, and word tagging for particular emotions.
 
-Using this package, we can first re-create our graph of debater sentiment over time for the two major parties. While some of the trends shift, our main takeaway clearly holds: Trump is a historically negative debater.
+Using this package, I can first re-create the graph of debater sentiment over time for the two major parties. While some of the trends shift, the main takeaway clearly holds: Trump is a historically negative debater.
 
 #### Average Sentiment of U.S. Presidential Debaters (sentimentr)
 
@@ -304,7 +304,7 @@ make_over_time_plot(sentence_sent, x_col="election", y_col="ave_sentiment",
                     y_min=-0.02, y_max=0.14)
 ```
 
-We can then look at particular emotions expressed, beyond simply negative or positive sentiment. This analysis essentially works the same way --- certain words are tagged as corresponding to a particular emotion. The more often these words are used, the stronger the average emotional score. Here, I look at four emotions: disgust, anger, fear, and sentiment. 
+I can then look at particular emotions expressed, beyond simply negative or positive sentiment. This analysis essentially works the same way --- certain words are tagged as corresponding to a particular emotion. The more often these words are used, the stronger the average emotional score. Here, I look at four emotions: disgust, anger, fear, and sentiment. 
 
 #### Average Emotional Scores of U.S. Presidential Debaters (sentimentr)
 
@@ -459,9 +459,9 @@ for(i in 1:length(years)){
 
 ## Principal Components Analysis
 
-In my final analysis, I convert each candidate's entire debate text into a two-dimensional measure. While this measure will not be easily interpretable, we can think of candidates that are "closer" together on these two dimensions as using more similar language. This sounds like magic, but is really a two step process:
+In my final analysis, I convert each candidate's entire debate text into a two-dimensional measure. While this measure will not be easily interpretable, you can think of candidates that are closer together on these two dimensions as using more "similar" language. This sounds like magic, but is really a two step process:
 
-1. Create a table where every row represents a speaker and every column represents a row. The value of each cell is the number of times the speaker in the row $n$ uses the word in column $m$ (here, I normalize this number by taking the log).^[To focus on data that provide the most useful information, we can exclude words that appear in very many debates (thus not providing unique information) or very few debates (thus telling us little about how the documents relate to each other). In my analysis I exclude words that appear in more than 90% or less than 10% of speakers' debate performances.]
+1. Create a table where every row represents a speaker and every column represents a word. The value of each cell is the number of times the speaker in the row $n$ uses the word in column $m$.^[Here, I normalize this number by using log(1+n), as is common.] To maximize the amount of useful information each cell provides, multiply each column by a measure that is inversley proportional to how frequently the word appears across documents (so a word like "the" is weighted downward).^[It is also common practice to exclude words that appear in very many debates (thus not providing unique information) or very few debates (thus telling us little about how the documents relate to each other). In my analysis I exclude words that appear in more than 90% or less than 10% of speakers' debate performances.] This is called a [term frequency–inverse document frequency](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) matrix.
 
 2. Use a [Principal Components Analysis](https://en.wikipedia.org/wiki/Principal_component_analysis) to "project" this very big $N$x$M$ table into an $N$x$2$ table that captures as much of the information from the original table as possible.^[This might still sound like magic, but I promise is just linear algebra.]
 
@@ -503,7 +503,7 @@ ggplot(pca, aes(PC1, PC2, label=paste(paste(speaker_clean, date)), color=party))
 
 On the bottom, one set of debate performances sticks out from the others: George W. Bush and John Kerry's September 30, 2004 debate. A likely reason? The candidates agreed to focus this debate entirely on foreign policy and homeland security, shaping the vocabularly they used. The 2016 Pence-Kaine debate, the two closest performances, also included lengthy dicussions on a number of foreign policy and national defense topics.
 
-We also see that the performances grouped together on the left side of the plot are generally from the more distant past. In particular, the far upper left includes every debate performance from Kennedy, Nixon, Ford, and Carter. By contrast, the debate performances in the top right appear to be primarily from the late 90s and early 2000s.
+You can also see that the performances grouped together on the left side of the plot are generally from the more distant past. In particular, the far upper left includes every debate performance from Kennedy, Nixon, Ford, and Carter. By contrast, the debate performances in the top right appear to be primarily from the late 90s and early 2000s.
 
 While the exclusion of proper nouns may have reduced the influence of some time-specific trends, the relative importance of certain issues (e.g. inflation, health care) are still likely to vary over time and shape the nouns used. To avoid picking up these time-specific topics, I re-run the analysis including only adjectives and verbs.
 
